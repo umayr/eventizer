@@ -22,37 +22,101 @@ namespace Eventizer
         public static void RegisterRoutes(RouteCollection routes)
         {
             routes.IgnoreRoute("{resource}.axd/{*pathInfo}");
-            routes.MapRoute(
-                "Events by all", // Route name
-                "Dashboard/events/", // URL with parameters
-                new { controller = "Events", action = "Index" } // Parameter defaults
-            );
 
+            #region Event Routes
             routes.MapRoute(
-                "Default", // Route name
-                "{controller}/{action}/{id}", // URL with parameters
-                new { controller = "Home", action = "Index", id = UrlParameter.Optional } // Parameter defaults
-            );
-            
+                    "Events by all", // Route name
+                    "Dashboard/events/", // URL with parameters
+                    new { controller = "Events", action = "Index" } // Parameter defaults
+                );
+
+
             routes.MapRoute(
                 "Events", // Route name
                 "Dashboard/events/view/{id}", // URL with parameters
                 new { controller = "Events", action = "View", id = UrlParameter.Optional }, // Parameter defaults
                 new { id = @"\d+" }
             );
-            
+
             routes.MapRoute(
                 "Events by ID", // Route name
                 "Dashboard/events/by/{id}", // URL with parameters
                 new { controller = "Events", action = "CreatedBy", id = UrlParameter.Optional }, // Parameter defaults
                 new { id = @"\d+" }
             );
-            
+
             routes.MapRoute(
                 "Events by me", // Route name
                 "Dashboard/events/by/me", // URL with parameters
                 new { controller = "Events", action = "Me" }
             );
+
+            #endregion
+            #region Task Routes
+            routes.MapRoute(
+                    "Tasks by all", // Route name
+                    "Dashboard/tasks/", // URL with parameters
+                    new { controller = "Tasks", action = "Index" } // Parameter defaults
+                );
+
+
+            routes.MapRoute(
+                "Tasks", // Route name
+                "Dashboard/tasks/view/{id}", // URL with parameters
+                new { controller = "Tasks", action = "View", id = UrlParameter.Optional }, // Parameter defaults
+                new { id = @"\d+" }
+            );
+
+            routes.MapRoute(
+                "Tasks by ID", // Route name
+                "Dashboard/tasks/by/{id}", // URL with parameters
+                new { controller = "Tasks", action = "CreatedBy", id = UrlParameter.Optional }, // Parameter defaults
+                new { id = @"\d+" }
+            );
+
+            routes.MapRoute(
+                "Tasks by me", // Route name
+                "Dashboard/tasks/by/me", // URL with parameters
+                new { controller = "Tasks", action = "Me" }
+            );
+
+            #endregion
+            #region Subtask Routes
+            routes.MapRoute(
+                    "Subtasks by all", // Route name
+                    "Dashboard/subtasks/", // URL with parameters
+                    new { controller = "Subtasks", action = "Index" } // Parameter defaults
+                );
+
+
+            routes.MapRoute(
+                "Subtasks", // Route name
+                "Dashboard/subtasks/view/{id}", // URL with parameters
+                new { controller = "Subtasks", action = "View", id = UrlParameter.Optional }, // Parameter defaults
+                new { id = @"\d+" }
+            );
+
+            routes.MapRoute(
+                "Subtasks by ID", // Route name
+                "Dashboard/subtasks/by/{id}", // URL with parameters
+                new { controller = "Subtasks", action = "CreatedBy", id = UrlParameter.Optional }, // Parameter defaults
+                new { id = @"\d+" }
+            );
+
+            routes.MapRoute(
+                "Subtasks by me", // Route name
+                "Dashboard/subtasks/by/me", // URL with parameters
+                new { controller = "Subtasks", action = "Me" }
+            );
+
+            #endregion
+
+            routes.MapRoute(
+                "Default", // Route name
+                "{controller}/{action}/{id}", // URL with parameters
+                new { controller = "Home", action = "Index", id = UrlParameter.Optional } // Parameter defaults
+            );
+
         }
 
         protected void Application_Start()

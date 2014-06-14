@@ -1,0 +1,78 @@
+﻿@model Eventizer.Models.Current
+@{
+    ViewBag.Title = "All Events";
+    
+    ViewBag.isAddSubtask = false;
+    ViewBag.isAddTask = false;
+
+    ViewBag.isHighlightedEvent = true;
+}
+
+<script src="@Url.Content("~/Static/js/jquery.ui.core.js")"></script>
+<script src="@Url.Content("~/Static/js/jquery.ui.datepicker.js")"></script>
+
+<link type="text/css" rel="stylesheet" href="@Url.Content("~/Static/css/datepicker.css")"/>
+
+@Html.Partial("_Navigation", Model.Employee)
+<section id="controls">
+    <div class="container-fluid">
+        <div class="col-md-8">
+            <br />
+            <div class="panel panel-default">
+                <div class="panel-heading">All Events</div>
+                @if (ViewBag.Events.Count > 0)
+                {
+                    <table class="table table-bordered table-hover table-striped">
+                        <thead>
+                            <tr>
+                                <td style="border-left:4px solid transparent">#</td>
+                                <td><strong>Task Name</strong></td>
+                                <td><strong>Task Description</strong></td>
+                                <td><strong>Created by</strong></td>
+                                <td><strong>Status</strong></td>
+                                <td><strong>Options</strong></td>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @{ int i = 1;}
+                            @foreach (Eventizer.Models.Event E in ViewBag.Events)
+                            {
+                                <tr style="overflow:hidden;">
+                                    <td style="border-left:4px solid @Eventizer.Helpers.Essentials.CalculatePriorityColor(E.Deadline, E.Status);">@i</td>
+                                    <td>@E.Name</td>
+                                    <td>@Eventizer.Helpers.Essentials.TrimLongText(E.Description, 60)</td>
+                                    <td><a href="@Href("/Dashboard/events/by/" + E.CreatedBy.ID)">@E.CreatedBy.Name</a></td>
+                                    <td>
+                                        @(E.Status ? "Completed" : "Pending")
+                                    </td>
+                                    <td><a href="@Href("/Dashboard/events/view/" + E.ID)" class="btn btn-xs btn-info btn-block">View</a></td>
+                                </tr>
+                                i++;
+                            }
+
+                        </tbody>
+                    </table>
+                }
+                else
+                {
+                    <div class="panel-body">
+                        <div class="alert alert-danger" style="text-align: center; margin-bottom: 0;">
+                            <p style="padding-bottom: 10px;"><strong>Oh, snap. </strong>No events have been assigned yet</p>
+
+                            <button class="btn btn-danger btn-sm">Add Event</button>
+                        </div>
+
+                    </div>
+                }
+            </div>
+        </div>
+        <div class="col-md-4">
+            <br />
+            @Html.Partial("_RightPanel", Model)
+        </div>
+    </div>
+</section>
+
+@Html.Partial("_BottomScripts", Model);
+<footer>
+</footer>

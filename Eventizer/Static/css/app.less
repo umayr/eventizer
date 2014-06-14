@@ -1,0 +1,126 @@
+﻿body {
+    padding: 0;
+    margin: 0;
+}
+
+
+.login-box {
+    margin-top: 20%;
+
+    .alert-wrap {
+        height: 60px;
+
+        .alert-danger, .alert-success, .alert-warning {
+            display: none;
+        }
+    }
+}
+
+.register-box {
+    margin-top: 9%;
+
+    .alert-wrap {
+        height: 60px;
+
+        .alert-danger, .alert-success, .alert-warning {
+            display: none;
+        }
+    }
+}
+
+.twitter-typeahead {
+    width: 100%;
+}
+
+.tt-dropdown-menu {
+    @tt-suggestion-height: 30px;
+    background: #FFF;
+    position: absolute;
+    max-height: @tt-suggestion-height * 5;
+    overflow: hidden;
+    width: 100%;
+    padding: 10px 0;
+    border: 1px solid #CCC;
+    border-radius: 5px;
+    box-shadow: 0 0 10px #EEE;
+
+    .tt-suggestions {
+        .tt-suggestion {
+            cursor: pointer;
+            text-indent: 20px;
+            height: @tt-suggestion-height;
+            padding-top: 5px;
+
+            &.tt-cursor {
+                background: #428BCA;
+                color: #FFF;
+            }
+        }
+    }
+}
+
+.bs-callout {
+    margin: 20px 0;
+    padding: 20px;
+    border-left: 3px solid #eee;
+
+    &.bs-callout-info {
+        background-color: #f4f8fa;
+        border-color: #5bc0de;
+
+        h4 {
+            color: #5bc0de;
+        }
+    }
+
+    &.bs-callout-warning {
+        background-color: #fcf8f2;
+        border-color: #f0ad4e;
+
+        h4 {
+            color: #f0ad4e;
+        }
+    }
+
+    &.bs-callout-danger {
+        background-color: #fdf7f7;
+        border-color: #d9534f;
+
+        h4 {
+            color: #d9534f;
+        }
+    }
+
+    &.bs-callout-success {
+        background-color: #eef8e9;
+        border-color: #3c763d;
+
+        h4 {
+            color: #3c763d;
+        }
+    }
+
+    &.bs-callout-default {
+        background-color: #fcfcfC;
+    }
+
+    p {
+        &:last-child {
+            margin-bottom: 0;
+        }
+    }
+
+    h4 {
+        font-size: 20px;
+        padding-top: 0;
+        margin-top: 0;
+
+        span.label {
+            position: relative;
+            top: -2px;
+            left: 10px;
+            font-size: 12px;
+            padding: 6px 10px 4px !important;
+        }
+    }
+}

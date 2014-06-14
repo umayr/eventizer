@@ -1,0 +1,194 @@
+﻿@* Single Event View Model *@
+
+@model Eventizer.Models.Current
+@{
+    ViewBag.Title = Model.Event.Name;
+    string ClassSuffix = Eventizer.Helpers.Essentials.CalculatePriorityClass(Model.Event.Deadline, Model.Event.Status);
+    ViewBag.isAddSubtask = false;
+    ViewBag.isAddTask = true;
+
+    ViewBag.addTaskToEvent = Model.Event;
+    ViewBag.isHighlightedEvent = true;
+}
+
+@Html.Partial("_Navigation", Model.Employee)
+
+<section id="controls">
+    <div class="container-fluid">
+        <div class="col-md-8">
+            <div class="jumbotron" style="background: @Eventizer.Helpers.Essentials.CalculatePriorityColor(Model.Event.Deadline, Model.Event.Status); color: #FFF;">
+                <h1>@Model.Event.Name</h1>
+                <h3>@Model.Event.Description</h3>
+
+                <br />
+                <button class="btn btn-default btn-lg"><i class="glyphicon glyphicon-edit" style="padding-right: 10px;"></i>Edit event</button>
+                <button class="btn btn-default btn-lg"><i class="glyphicon glyphicon-ok" style="padding-right: 10px;"></i>Mark Completed</button>
+            </div>
+
+            <div class="panel panel-default panel-@ClassSuffix">
+                <div class="panel-heading">Event Details</div>
+                <div class="panel-body">
+                    <p>Event on <strong>@Model.Event.Deadline.ToLongDateString()</strong></p>
+                    <p>Created by <strong>@Model.Event.CreatedBy.Name</strong> on <strong>@Model.Event.DateCreated.ToLongDateString()</strong></p>
+                    <p>Contains @Model.Event.TotalTasks() tasks, @Model.Event.TotalSubtasks() subtasks, and requires @Model.Event.TotalAssets() assets &amp; @Model.Event.TotalLaboursRequired() labours.</p>
+                    <p>Status: <span class="label label-@ClassSuffix" style="font-size:14px;">@(Model.Event.Status ? "Completed" : "Pending")</span> </p>
+                </div>
+            </div>
+            @*            
+            <a href="javascript:void;" id="anchor-broad" class="btn btn-sm btn-info achor-toggle" style="float: right;"><span class="glyphicon glyphicon-resize-full" style="padding-right: 10px;"></span>Show Full view</a>
+            <a href="javascript:void;" id="anchor-compact" class="btn btn-sm btn-info achor-toggle" style="float: right;"><span class="glyphicon glyphicon-resize-small" style="padding-right: 10px;"></span>Show Compact view</a>
+            <script>
+                $('.anchor-toggle').click(function () {
+                    var prefix = $(this).attr('id').split('-')[1];
+                    alert(prefix);
+                    $('.view-toggle').stop().slideUp();
+                    $('#' + prefix + '-view').stop().slideDown();
+                });
+            </script>
+            <span class="clearfix" style="height: 45px; display: inline-block"></span>
+            *@
+            <div id="compact-view" class="view-toggle">
+                <div class="panel panel-default">
+                    <div class="panel-heading">Event Tasks</div>
+                    @if (Model.Event.Tasks.Count > 0)
+                    {
+                        <table class="table table-bordered table-hover table-striped">
+                            <thead>
+                                <tr>
+                                    <td>#</td>
+                                    <td><strong>Task Name</strong></td>
+                                    <td><strong>Task Description</strong></td>
+                                    <td><strong>Created by</strong></td>
+                                    <td><strong>Assigned to</strong></td>
+                                    <td><strong>Options</strong></td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @{ int i = 1;}
+                                @foreach (Eventizer.Models.Task T in Model.Event.Tasks)
+                                {
+                                    <tr>
+                                        <td>@i</td>
+                                        <td>@T.Name</td>
+                                        <td>@Eventizer.Helpers.Essentials.TrimLongText(T.Description, 50)</td>
+                                        <td><a href="#">@T.CreatedBy.Name</a></td>
+                                        <td><a href="#">@T.AssignedTo.Name</a></td>
+                                        <td><a href="@Href("/Tasks/View/" + T.ID)" class="btn btn-xs btn-info btn-block">View</a></td>
+                                    </tr>
+                                    i++;
+                                }
+
+                            </tbody>
+                        </table>
+                    }
+                    else
+                    {
+                        <div class="panel-body">
+                            <div class="alert alert-danger" style="text-align: center; margin-bottom: 0;">
+                                <p style="padding-bottom: 10px;"><strong>Oh, snap. </strong>No tasks have been assigned yet</p>
+
+                                <button class="btn btn-danger btn-sm" data-toggle="modal" data-target="#task-modal">Add Task</button>
+                            </div>
+
+                        </div>
+                    }
+                </div>
+                @if (Model.Event.Tasks.Count > 0)
+                {
+                    <div class="panel panel-default">
+                        <div class="panel-heading">Event Subtasks</div>
+                        @if (Model.Event.TotalSubtasks() > 0)
+                        {
+                            <table class="table table-bordered table-hover table-striped">
+                                <thead>
+                                    <tr>
+                                        <td>#</td>
+                                        <td><strong>Subtask Name</strong></td>
+                                        <td><strong>Subtask Description</strong></td>
+                                        <td><strong>Created by</strong></td>
+                                        <td><strong>Assigned to</strong></td>
+                                        <td><strong>Task</strong></td>
+                                        <td><strong>Options</strong></td>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @{ int j = 1;}
+                                    @foreach (Eventizer.Models.Task T in Model.Event.Tasks)
+                                    {
+                                        foreach (Eventizer.Models.Subtask S in T.Subtasks)
+                                        {
+                                        <tr>
+                                            <td>@j</td>
+                                            <td>@S.Name</td>
+                                            <td>@Eventizer.Helpers.Essentials.TrimLongText(S.Description, 30)</td>
+                                            <td><a href="#">@S.CreatedBy.Name</a></td>
+                                            <td><a href="#">@S.AssignedTo.Name</a></td>
+                                            <td><a href="@Href("/Tasks/View/" + T.ID)">@T.Name</a></td>
+                                            <td><a href="@Href("/Subtasks/View/" + S.ID)" class="btn btn-xs btn-info btn-block">View</a></td>
+                                        </tr>    
+                                            j++;
+                                        }
+                                    }
+
+                                </tbody>
+                            </table>
+                        }
+                        else
+                        {
+                            <div class="panel-body">
+
+                                <div class="alert alert-danger" style="text-align: center; margin-bottom: 0;">
+                                    <p style="padding-bottom: 10px;"><strong>Oh, snap. </strong>No subtasks have been assigned yet</p>
+
+                                    <button class="btn btn-danger btn-sm">Add Subtask</button>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                }
+            </div>
+            <div id="broad-view" style="display: none" class="view-toggle">
+
+                @foreach (Eventizer.Models.Task T in Model.Event.Tasks)
+                {
+                    string TClassSuffix = Eventizer.Helpers.Essentials.CalculatePriorityClass(T.Deadline, T.Status);
+                    <div class="bs-callout bs-callout-@TClassSuffix" id="Task-@T.ID" data-id="@T.ID" 
+                         data-name="@T.Name" data-status="@T.Status" data-deadline="@T.Deadline" data-assigned-to="@T.AssignedTo">
+                        <h4>@T.Name<span class="label label-@TClassSuffix">Task</span></h4>
+                        <p>@T.Description</p>
+                        <p>Created by <strong>@T.CreatedBy.Name</strong> on <strong>@T.DateCreated.ToLongDateString()</strong></p>
+                        <p>Assigned to <strong>@T.AssignedTo.Name</strong> due on <strong>@T.Deadline.ToLongDateString()</strong></p>
+                        <button class="btn btn-@TClassSuffix">Edit</button>
+                        <button class="btn btn-@TClassSuffix">View</button>
+                    </div>
+                        
+                }
+
+                @foreach (Eventizer.Models.Task T in Model.Event.Tasks)
+                {
+                    foreach (Eventizer.Models.Subtask S in T.Subtasks)
+                    {
+                        string SClassSuffix = Eventizer.Helpers.Essentials.CalculatePriorityClass(S.Deadline, S.Status);
+                    <div class="bs-callout bs-callout-@SClassSuffix">
+                        <h4>@S.Name<span class="label label-@SClassSuffix">Subtask</span></h4>
+                        <p>@S.Description</p>
+                        <p>Created by <strong>@S.CreatedBy.Name</strong> on <strong>@S.DateCreated.ToLongDateString()</strong></p>
+                        <p>Assigned to <strong>@S.AssignedTo.Name</strong> due on <strong>@S.Deadline.ToLongDateString()</strong></p>
+                        <button class="btn btn-@SClassSuffix">Edit</button>
+                        <button class="btn btn-@SClassSuffix">View</button>
+                    </div>
+                    }
+                }
+
+            </div>
+        </div>
+        <div class="col-md-4">
+            <br />
+            @Html.Partial("_RightPanel", Model)
+        </div>
+    </div>
+</section>
+
+@Html.Partial("_BottomScripts", Model);
+
+

@@ -1,0 +1,185 @@
+﻿@model Eventizer.Models.Current
+<div class="modal fade" id="event-modal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form role="form" id="event-form">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    <h4 class="modal-title">Create Event</h4>
+                </div>
+                <div class="modal-body">
+
+                    <div class="form-group">
+                        <label for="event-name">Event name</label>
+                        <input type="text" class="form-control" id="event-name" name="name" placeholder="Enter event name">
+                    </div>
+                    <div class="form-group">
+                        <label for="event-description">Event description</label>
+                        <textarea rows="10" class="form-control" id="event-description" name="description" placeholder="Enter event description"></textarea>
+                    </div>
+                    <div class="form-group" style="margin-bottom: 0;">
+                        <label for="event-deadline">Event Date</label>
+                        <input type="text" class="form-control" id="event-deadline" name="deadline" placeholder="Select a date for event">
+                        <script>
+                            $('#event-deadline').datepicker({
+                                minDate: 0,
+                                dateFormat: 'mm/dd/yy',
+                                beforeShow: function (input, inst) {
+                                    $(inst.dpDiv).position({
+                                        my: "right bottom",
+                                        at: "right top",
+                                        of: $(input)
+                                    })
+                                }
+                            });
+                        </script>
+                    </div>
+
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-primary">Create Event</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+@if (ViewBag.addTaskToEvent != null)
+{
+    <div class="modal fade" id="task-modal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <form role="form" id="task-form">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                        <h4 class="modal-title">Create Task</h4>
+                    </div>
+                    <div class="modal-body">
+
+                        <div class="form-group">
+                            <label for="event-name">Task name</label>
+                            <input type="text" class="form-control" id="task-name" name="name" placeholder="Enter task name">
+                            <input type="hidden" id="event-id-for-task" name="event_id_for_task" value="@ViewBag.addTaskToEvent.ID"/>
+                        </div>
+                        <div class="form-group">
+                            <label for="event-description">Task description</label>
+                            <textarea rows="10" class="form-control" id="task-description" name="description" placeholder="Enter task description"></textarea>
+                        </div>
+                        <div class="form-group" >
+                            <label for="event-deadline">Task Deadline</label>
+                            <input type="text" class="form-control" id="task-deadline" name="deadline" placeholder="Select a date for task">
+                            <script>
+                                $('#task-deadline').datepicker({
+                                    minDate: 0,
+                                    maxDate: '@ViewBag.addTaskToEvent.Deadline.ToShortDateString()',
+                                    dateFormat: 'mm/dd/yy',
+                                    beforeShow: function (input, inst) {
+                                        $(inst.dpDiv).position({
+                                            my: "right bottom",
+                                            at: "right top",
+                                            of: $(input)
+                                        })
+                                    }
+                                });
+                            </script>
+                        </div>
+                        <div class="form-group" style="margin-bottom: 0;">
+                            <label for="assigned-to-task-name">Assign task to</label>
+                            <input type="hidden" id="assigned-to-task-id" name="assigned_to" />
+                            <br />
+                            <input type="text" class="form-control" id="assigned-to-task-name" placeholder="Enter name of the assignee" />
+                            
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                        <button type="submit" class="btn btn-primary">Create Task</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+}
+
+<div class="panel panel-default @(ViewBag.isHighlightedEvent != null ? (ViewBag.isHighlightedEvent ? "panel-info" : "") : "")">
+    <div class="panel-heading">
+        Events
+    </div>
+    <div class="panel-body">
+        <button class="btn btn-primary" data-toggle="modal" data-target="#event-modal">Create new Event</button>
+        <a href="@Href("/Dashboard/events/by/me")" class="btn btn-info">View my Events</a>
+        <a href="@Href("/Dashboard/events/")" class="btn btn-default">View All</a>
+    </div>
+</div>
+<div class="panel panel-default">
+    <div class="panel-heading">
+        Tasks
+    </div>
+    <div class="panel-body">
+        @if (ViewBag.isAddTask)
+        {
+            <button class="btn btn-primary" data-toggle="modal" data-target="#task-modal">Add Task</button>
+        }
+        <button class="btn btn-info">View my Tasks</button>
+        <button class="btn btn-default">View All</button>
+    </div>
+</div>
+<div class="panel panel-default">
+    <div class="panel-heading">
+        Sub-Tasks
+    </div>
+    <div class="panel-body">
+        @if (ViewBag.isAddSubtask)
+        {
+            <button class="btn btn-primary" data-toggle="modal" data-target="#subtask-modal">Add Subtask</button>
+        }
+        <button class="btn btn-info">View my Subtasks</button>
+        <button class="btn btn-default">View All</button>
+    </div>
+</div>
+<script>
+    var substringMatcher = function (strs) {
+        return function findMatches(q, cb) {
+            var matches, substringRegex;
+
+            // an array that will be populated with substring matches
+            matches = [];
+
+            // regex used to determine if a string contains the substring `q`
+            substrRegex = new RegExp(q, 'i');
+
+            // iterate through the pool of strings and for any string that
+            // contains the substring `q`, add it to the `matches` array
+            $.each(strs, function (i, str) {
+                if (substrRegex.test(str)) {
+                    // the typeahead jQuery plugin expects suggestions to a
+                    // JavaScript object, refer to typeahead docs for more info
+                    matches.push({ value: str });
+                }
+            });
+
+            cb(matches);
+        };
+    };
+
+    var employees = { id : @Html.Raw(ViewBag.EmployeeIds), names: @Html.Raw(ViewBag.EmployeeNames)} ;
+
+    $('#assigned-to-task-name').typeahead({
+        hint: true,
+        highlight: true,
+        minLength: 1
+    },
+    {
+        name: 'name',
+        displayKey: 'value',
+        source: substringMatcher(employees.names)
+    });
+
+    $('#assigned-to-task-name').blur(function(){
+        var val = $(this).val();
+        if(val != undefined || val != null){
+            $('#assigned-to-task-id').val(employees.id[$.inArray(val, employees.names)]);
+        }
+    });
+                
+</script>

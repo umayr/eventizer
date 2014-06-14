@@ -1,0 +1,81 @@
+﻿@model Eventizer.Models.Current
+@{
+    ViewBag.Title = Model.Subtask.Name;
+}
+
+@Html.Partial("_Navigation", Model.Employee)
+
+<section id="controls">
+    <div class="container-fluid">
+        <div class="col-md-8">
+            <div class="jumbotron" style="background: @Eventizer.Helpers.Essentials.CalculatePriority(Model.Subtask); color: #FFF;">
+                <h1>@Model.Subtask.Name</h1>
+                <h3>@Model.Subtask.Description + @Model.Subtask.LaboursRequired</h3>
+                <br />
+                <button class="btn btn-default btn-lg">Edit Subtask</button>
+            </div>
+
+            <table class="table table-bordered table-hover table-striped">
+                <thead>
+                    <tr>
+                        <td>#</td>
+                        <td><strong>Asset Name</strong></td>
+                        <td><strong>Asset Type</strong></td>
+                        <td><strong>Created by</strong></td>
+                        <td><strong>Options</strong></td>
+                    </tr>
+                </thead>
+                <tbody>
+                   @* @{ int i = 1;}
+                    @foreach (Eventizer.Models.Asset A in Model.Subtask.Assets)
+                    {
+                        <tr>
+                            <td>@i</td>
+                            <td>@A.Name</td>
+                            <td>@A.Type</td>
+                            <td><a href="#">@A.CreatedBy.Name</a></td>
+                            <td><a href="@Href("/Asset/View/" + A.ID)" class="btn btn-xs btn-info btn-block">View</a></td>
+                        </tr>
+                        i++;
+                    }*@
+
+                </tbody>
+            </table>
+        </div>
+        <div class="col-md-4">
+            <br />
+            <div class="panel panel-default ">
+                <div class="panel-heading">
+                    Events
+                </div>
+                <div class="panel-body">
+                    <button class="btn btn-info" data-toggle="modal" data-target="#event-modal">Create new Event</button>
+                    <button class="btn btn-default">View Pending</button>
+                    <button class="btn btn-default">View All</button>
+                </div>
+            </div>
+            <div class="panel panel-default ">
+                <div class="panel-heading">
+                    Tasks
+                </div>
+                <div class="panel-body">
+                    <button class="btn btn-info">Add Task</button>
+                    <button class="btn btn-default">View Pending</button>
+                    <button class="btn btn-default">View All</button>
+                </div>
+            </div>
+            <div class="panel panel-default panel-info">
+                <div class="panel-heading">
+                    Sub-Tasks
+                </div>
+                <div class="panel-body">
+                    <button class="btn btn-info">Add Subtask</button>
+                    <button class="btn btn-default">View Pending</button>
+                    <button class="btn btn-default">View All</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+

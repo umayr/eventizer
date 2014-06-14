@@ -1,0 +1,47 @@
+﻿@model Eventizer.Models.Current
+@{
+    ViewBag.Title = "Dashboard";
+    ViewBag.isAddSubtask = false;
+    ViewBag.isAddTask = false;
+}
+
+
+
+
+
+@Html.Partial("_Navigation", Model.Employee)
+<section id="controls">
+    <div class="container-fluid">
+        <div class="col-md-8">
+            <div class="bs-callout bs-callout-success">
+                <h4>No default class<span class="label label-success">Event</span></h4>
+                <p>Alerts don't have default classes, only base and modifier classes. A default gray alert doesn't make too much sense, so you're required to specify a type via contextual class. Choose from success, info, warning, or danger.</p>
+                <button class="btn btn-success">Edit Event</button>
+            </div>
+            <div class="bs-callout bs-callout-info">
+                <h4>No default class<span class="label label-info">Subtask</span></h4>
+                <p>Alerts don't have default classes, only base and modifier classes. A default gray alert doesn't make too much sense, so you're required to specify a type via contextual class. Choose from success, info, warning, or danger.</p>
+            </div>
+            <div class="bs-callout bs-callout-warning">
+                <h4>No default class<span class="label label-warning">Task</span></h4>
+                <p>Alerts don't have default classes, only base and modifier classes. A default gray alert doesn't make too much sense, so you're required to specify a type via contextual class. Choose from success, info, warning, or danger.</p>
+            </div>
+            <div class="bs-callout bs-callout-danger">
+                <h4>No default class<span class="label label-danger">Subtask</span></h4>
+                <p>Alerts don't have default classes, only base and modifier classes. A default gray alert doesn't make too much sense, so you're required to specify a type via contextual class. Choose from success, info, warning, or danger.</p>
+            </div>
+            <div class="bs-callout bs-callout-default">
+                <h4>No default class<span class="label label-default">Event</span></h4>
+                <p>Alerts don't have default classes, only base and modifier classes. A default gray alert doesn't make too much sense, so you're required to specify a type via contextual class. Choose from success, info, warning, or danger.</p>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <br />
+         @Html.Partial("_RightPanel",Model)   
+        </div>
+    </div>
+</section>
+
+@Html.Partial("_BottomScripts", Model);
+<footer>
+</footer>

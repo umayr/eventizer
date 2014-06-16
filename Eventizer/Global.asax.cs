@@ -16,12 +16,29 @@ namespace Eventizer
     {
         public static void RegisterGlobalFilters(GlobalFilterCollection filters)
         {
-            filters.Add(new HandleErrorAttribute());
         }
 
         public static void RegisterRoutes(RouteCollection routes)
         {
             routes.IgnoreRoute("{resource}.axd/{*pathInfo}");
+
+            routes.MapRoute(
+                    "All Assets", // Route name
+                    "Dashboard/assets/", // URL with parameters
+                    new { controller = "Assets", action = "Index" } // Parameter defaults
+                );
+
+            routes.MapRoute(
+                    "All Employee", // Route name
+                    "Dashboard/employees", // URL with parameters
+                    new { controller = "Employee", action = "Index" } // Parameter defaults
+                );
+            routes.MapRoute(
+                    "Register Employee", // Route name
+                    "Dashboard/employee/add", // URL with parameters
+                    new { controller = "Employee", action = "Add" } // Parameter defaults
+                );
+
 
             #region Event Routes
             routes.MapRoute(
@@ -123,11 +140,46 @@ namespace Eventizer
         {
             AreaRegistration.RegisterAllAreas();
 
-            // Use LocalDB for Entity Framework by default
             Database.DefaultConnectionFactory = new SqlConnectionFactory(@"Data Source=(localdb)\v11.0; Integrated Security=True; MultipleActiveResultSets=True");
 
             RegisterGlobalFilters(GlobalFilters.Filters);
             RegisterRoutes(RouteTable.Routes);
+
+
+        }
+        protected void Application_Error(object sender, EventArgs e)
+        {
+
+            var ex = Server.GetLastError().GetBaseException();
+
+            Server.ClearError();
+            var routeData = new RouteData();
+            routeData.Values.Add("controller", "Error");
+            routeData.Values.Add("action", "Index");
+
+            if (ex.GetType() == typeof(HttpException))
+            {
+                var httpException = (HttpException)ex;
+                var code = httpException.GetHttpCode();
+                routeData.Values.Add("status", code);
+            }
+            else
+            {
+                routeData.Values.Add("status", 500);
+            }
+
+            routeData.Values.Add("error", ex);
+
+            IController errorController = new Eventizer.Controllers.ErrorController();
+            errorController.Execute(new RequestContext(new HttpContextWrapper(Context), routeData));
+        }
+
+        protected void Application_EndRequest(object sender, EventArgs e)
+        {
+            if (Context.Response.StatusCode == 401)
+            { // this is important, because the 401 is not an error by default!!!
+                throw new HttpException(401, "You are not authorised");
+            }
         }
     }
 }

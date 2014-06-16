@@ -1,4 +1,16 @@
-﻿@model Eventizer.Models.Current
+﻿@{ViewBag.isAddAsset = true;}
+<div class="modal fade" id="alert" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 class="modal-title">Alert</h4>
+            </div>
+            <div class="modal-body">
+            </div>
+        </div>
+    </div>
+</div>
 <div class="modal fade" id="event-modal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
@@ -65,7 +77,7 @@
                             <label for="event-description">Task description</label>
                             <textarea rows="10" class="form-control" id="task-description" name="description" placeholder="Enter task description"></textarea>
                         </div>
-                        <div class="form-group" >
+                        <div class="form-group">
                             <label for="event-deadline">Task Deadline</label>
                             <input type="text" class="form-control" id="task-deadline" name="deadline" placeholder="Select a date for task">
                             <script>
@@ -88,7 +100,7 @@
                             <input type="hidden" id="assigned-to-task-id" name="assigned_to" />
                             <br />
                             <input type="text" class="form-control" id="assigned-to-task-name" placeholder="Enter name of the assignee" />
-                            
+
                         </div>
                     </div>
                     <div class="modal-footer">
@@ -101,6 +113,114 @@
     </div>
 }
 
+@if (ViewBag.addSubtaskToTask != null)
+{
+    <div class="modal fade" id="subtask-modal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <form role="form" id="subtask-form">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                        <h4 class="modal-title">Create Subtask</h4>
+                    </div>
+                    <div class="modal-body">
+
+                        <div class="form-group">
+                            <label for="stask-name">Subtask name</label>
+                            <input type="text" class="form-control" id="stask-name" name="name" placeholder="Enter subtask name">
+                            <input type="hidden" id="task-id-for-stask" name="task_id_for_subtask" value="@ViewBag.addSubtaskToTask.ID"/>
+                        </div>
+                        <div class="form-group">
+                            <label for="stask-description">Subtask description</label>
+                            <textarea rows="10" class="form-control" id="stask-description" name="description" placeholder="Enter subtask description"></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label for="stask-deadline">Subtask Deadline</label>
+                            <input type="text" class="form-control" id="stask-deadline" name="deadline" placeholder="Select a date for subtask">
+                            <script>
+                                $('#stask-deadline').datepicker({
+                                    minDate: 0,
+                                    maxDate: '@ViewBag.addSubtaskToTask.Deadline.ToShortDateString()',
+                                    dateFormat: 'mm/dd/yy',
+                                    beforeShow: function (input, inst) {
+                                        $(inst.dpDiv).position({
+                                            my: "right bottom",
+                                            at: "right top",
+                                            of: $(input)
+                                        })
+                                    }
+                                });
+                            </script>
+                        </div>
+                        <div class="form-group">
+                            @{
+    List<Eventizer.Models.AssetName> Assets = Eventizer.Models.Asset.FetchAllAssetNames();    
+                            }
+                            <label for="assets-name">Add any Asset for Subtask</label>
+                            <select name="asset_id" id="assets-name" class="form-control">
+                                <option value="0">Select assets for subtask</option>
+                                @foreach (Eventizer.Models.AssetName A in Assets)
+                                { 
+                                    <option value="@A.ID">@A.Name</option>
+                                }
+                            </select>
+                        </div>
+
+                        <div class="form-group" id="asset-quantity-warp" style="display:none;">
+                            <label for="asset-quantity">Asset quantity</label>
+                            <input type="number" class="form-control" id="asset-quantity" name="asset_quantity" placeholder="Enter quantity for selected asset" min="0" max="1000" />
+
+                        </div>
+                        <div class="form-group">
+                            <label for="assigned-to-stask-name">Assign subtask to</label>
+                            <input type="hidden" id="assigned-to-stask-id" name="assigned_to" />
+                            <br />
+                            <input type="text" class="form-control" id="assigned-to-stask-name" placeholder="Enter name of the assignee" />
+
+                        </div>
+                        <div class="form-group" style="margin-bottom: 0;">
+                            <label for="labours-required">Labours required</label>
+                            <input type="number" class="form-control" id="labours-required" name="labours_required" placeholder="Type the number of required labours" min="0" max="1000" />
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                        <button type="submit" class="btn btn-primary">Create Subtask</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+}
+
+<div class="modal fade" id="asset-modal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form role="form" id="asset-form">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    <h4 class="modal-title">Add a new Asset</h4>
+                </div>
+                <div class="modal-body">
+
+                    <div class="form-group">
+                        <label for="asset-name">Asset name</label>
+                        <input type="text" class="form-control" id="asset-name" name="name" placeholder="Enter asset name">
+                    </div>
+                    <div class="form-group" style="margin-bottom: 0;">
+                        <label for="asset-type">Asset Type</label>
+                        <input type="text" class="form-control" id="asset-type" name="type" placeholder="Enter asset type" />
+
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-primary">Add Asset</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
 <div class="panel panel-default @(ViewBag.isHighlightedEvent != null ? (ViewBag.isHighlightedEvent ? "panel-info" : "") : "")">
     <div class="panel-heading">
         Events
@@ -111,30 +231,42 @@
         <a href="@Href("/Dashboard/events/")" class="btn btn-default">View All</a>
     </div>
 </div>
-<div class="panel panel-default">
+<div class="panel panel-default @(ViewBag.isHighlightedTask != null ? (ViewBag.isHighlightedTask ? "panel-info" : "") : "")">
     <div class="panel-heading">
         Tasks
     </div>
     <div class="panel-body">
-        @if (ViewBag.isAddTask)
+        @if (ViewBag.isAddTask != null ? ViewBag.isAddTask : false)
         {
             <button class="btn btn-primary" data-toggle="modal" data-target="#task-modal">Add Task</button>
         }
-        <button class="btn btn-info">View my Tasks</button>
-        <button class="btn btn-default">View All</button>
+        <a href="@Href("/Dashboard/tasks/by/me")" class="btn btn-info">View my Tasks</a>
+        <a href="@Href("/Dashboard/tasks/")" class="btn btn-default">View All</a>
     </div>
 </div>
-<div class="panel panel-default">
+<div class="panel panel-default @(ViewBag.isHighlightedSubtask != null ? (ViewBag.isHighlightedSubtask ? "panel-info" : "") : "")">
     <div class="panel-heading">
         Sub-Tasks
     </div>
     <div class="panel-body">
-        @if (ViewBag.isAddSubtask)
+        @if (ViewBag.isAddSubtask != null ? ViewBag.isAddSubtask : false)
         {
             <button class="btn btn-primary" data-toggle="modal" data-target="#subtask-modal">Add Subtask</button>
         }
-        <button class="btn btn-info">View my Subtasks</button>
-        <button class="btn btn-default">View All</button>
+        <a href="@Href("/Dashboard/subtasks/by/me")" class="btn btn-info">View my Subtasks</a>
+        <a href="@Href("/Dashboard/subtasks/")" class="btn btn-default">View All</a>
+    </div>
+</div>
+<div class="panel panel-default @(ViewBag.isHighlightedAsset != null ? (ViewBag.isHighlightedAsset ? "panel-info" : "") : "")">
+    <div class="panel-heading">
+        Assets
+    </div>
+    <div class="panel-body">
+        @if (ViewBag.isAddAsset != null ? ViewBag.isAddAsset : false)
+        {
+            <button class="btn btn-primary" data-toggle="modal" data-target="#asset-modal">Add Asset</button>
+        }
+        <a href="@Href("/Dashboard/assets/")" class="btn btn-default">View All</a>
     </div>
 </div>
 <script>
@@ -181,5 +313,31 @@
             $('#assigned-to-task-id').val(employees.id[$.inArray(val, employees.names)]);
         }
     });
-                
+    
+    $('#assigned-to-stask-name').typeahead({
+        hint: true,
+        highlight: true,
+        minLength: 1
+    },
+    {
+        name: 'name',
+        displayKey: 'value',
+        source: substringMatcher(employees.names)
+    });
+
+    $('#assigned-to-stask-name').blur(function(){
+        var val = $(this).val();
+        if(val != undefined || val != null){
+            $('#assigned-to-stask-id').val(employees.id[$.inArray(val, employees.names)]);
+        }
+    });
+
+    $('#assets-name').change(function(){
+        if($('#assets-name option:selected').val() != 0){
+            $('#asset-quantity-warp').slideDown();
+        }
+        else{
+            $('#asset-quantity-warp').slideUp();
+        }
+    });
 </script>

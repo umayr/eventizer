@@ -16,12 +16,12 @@
         <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
             <ul class="nav navbar-nav">
                 <li class="@(ViewBag.Title == "Dashboard" ? "active" : "")"><a href="@Href("/Dashboard/")">Dashboard</a></li>
-                <li class="dropdown">
+                <li class="dropdown @(ViewBag.Title == "Register" || ViewBag.Title == "All Employees" ? "active" : "")">
                     <a href="#" class="dropdown-toggle" data-toggle="dropdown">Employees <b class="caret"></b></a>
                     <ul class="dropdown-menu">
-                        <li><a href="#">Add new Employee</a></li>
+                        <li><a href="@Href("/Dashboard/employee/add")">Add new Employee</a></li>
                         <li class="divider"></li>
-                        <li><a href="#">View all Employees</a></li>
+                        <li><a href="@Href("/Dashboard/employees")">View all Employees</a></li>
                     </ul>
                 </li>
             </ul>

@@ -17,9 +17,9 @@ namespace Eventizer.Controllers
         {
             if (Essentials.CheckIfAuthenticated())
             {
-                //ViewBag.LoggedInEmployee = (Employee)Session["Employee"];
                 Current C = new Current();
                 C.Employee = (Employee)Session["Employee"];
+                ViewBag.Feeds = Feed.FetchAllFeeds();
                 return View(C);
             }
             else { return RedirectToAction("Index", "Home"); }

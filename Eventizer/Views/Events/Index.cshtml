@@ -57,9 +57,8 @@
                 {
                     <div class="panel-body">
                         <div class="alert alert-danger" style="text-align: center; margin-bottom: 0;">
-                            <p style="padding-bottom: 10px;"><strong>Oh, snap. </strong>No events have been assigned yet</p>
-
-                            <button class="btn btn-danger btn-sm">Add Event</button>
+                            <p style="padding-bottom: 10px;"><strong>Oh, snap. </strong>No events have been created so far.</p>
+                            <button class="btn btn-danger btn-sm" data-toggle="modal" data-target="#event-modal">Add Event</button>
                         </div>
 
                     </div>
@@ -68,11 +67,9 @@
         </div>
         <div class="col-md-4">
             <br />
-            @Html.Partial("_RightPanel", Model)
+            @Html.Partial("_RightPanel", null)
         </div>
     </div>
 </section>
 
-@Html.Partial("_BottomScripts", Model);
-<footer>
-</footer>
+@Html.Partial("_BottomScripts", null)

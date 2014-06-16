@@ -39,6 +39,7 @@ namespace Eventizer.Models
                     subtask.AssignedTo = Employee.FetchEmployeeByID((int)reader["assigned_to"]);
                     subtask.DateCreated = DateTime.Parse(reader["date_created"].ToString());
                     subtask.Deadline = DateTime.Parse(reader["deadline"].ToString());
+                    subtask.Assets = (reader["assets"].ToString() != "0,") ? Subtask.FetchAssetsArray(reader["assets"].ToString()) : new List<Asset>();
                 }
             }
 
@@ -60,6 +61,29 @@ namespace Eventizer.Models
         {
             return 0;
             //return Assets.Count;
+        }
+
+        public static List<Subtask> FetchAllSubtasks(SqlDataReader reader)
+        {
+            List<Subtask> Subtasks = new List<Subtask>();
+
+            while (reader.Read())
+            {
+
+                Subtask E = new Subtask();
+                E.ID = (int)reader["id"];
+                E.Name = reader["name"].ToString();
+                E.Description = reader["description"].ToString();
+                E.Status = (bool)reader["status"];
+                E.CreatedBy = Employee.FetchEmployeeByID((int)reader["created_by"]);
+                E.DateCreated = DateTime.Parse(reader["date_created"].ToString());
+                E.Deadline = DateTime.Parse(reader["deadline"].ToString());
+                E.LaboursRequired = (int)reader["labours_required"];
+                Subtasks.Add(E);
+            }
+            reader.Close();
+            reader.Dispose();
+            return Subtasks;
         }
     }
 }

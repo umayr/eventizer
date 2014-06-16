@@ -3,45 +3,52 @@
     ViewBag.Title = "Dashboard";
     ViewBag.isAddSubtask = false;
     ViewBag.isAddTask = false;
+    ViewBag.isAddAsset = true;
 }
-
-
-
-
-
 @Html.Partial("_Navigation", Model.Employee)
 <section id="controls">
     <div class="container-fluid">
         <div class="col-md-8">
-            <div class="bs-callout bs-callout-success">
-                <h4>No default class<span class="label label-success">Event</span></h4>
-                <p>Alerts don't have default classes, only base and modifier classes. A default gray alert doesn't make too much sense, so you're required to specify a type via contextual class. Choose from success, info, warning, or danger.</p>
-                <button class="btn btn-success">Edit Event</button>
-            </div>
-            <div class="bs-callout bs-callout-info">
-                <h4>No default class<span class="label label-info">Subtask</span></h4>
-                <p>Alerts don't have default classes, only base and modifier classes. A default gray alert doesn't make too much sense, so you're required to specify a type via contextual class. Choose from success, info, warning, or danger.</p>
-            </div>
-            <div class="bs-callout bs-callout-warning">
-                <h4>No default class<span class="label label-warning">Task</span></h4>
-                <p>Alerts don't have default classes, only base and modifier classes. A default gray alert doesn't make too much sense, so you're required to specify a type via contextual class. Choose from success, info, warning, or danger.</p>
-            </div>
-            <div class="bs-callout bs-callout-danger">
-                <h4>No default class<span class="label label-danger">Subtask</span></h4>
-                <p>Alerts don't have default classes, only base and modifier classes. A default gray alert doesn't make too much sense, so you're required to specify a type via contextual class. Choose from success, info, warning, or danger.</p>
-            </div>
-            <div class="bs-callout bs-callout-default">
-                <h4>No default class<span class="label label-default">Event</span></h4>
-                <p>Alerts don't have default classes, only base and modifier classes. A default gray alert doesn't make too much sense, so you're required to specify a type via contextual class. Choose from success, info, warning, or danger.</p>
-            </div>
+
+            @if (ViewBag.Feeds.Count > 0)
+            {
+                foreach (Eventizer.Models.Feed F in ViewBag.Feeds)
+                {
+                    string priorityClass = Eventizer.Helpers.Essentials.CalculatePriorityClass(F.Deadline, F.Status);
+                    string url = string.Format("/Dashboard/{0}s/view/{1}", F.Type.ToLower(), F.ID);
+                    int type = Eventizer.Helpers.Essentials.GetFeedType(F.Type);
+                <div class="bs-callout bs-callout-@priorityClass">
+                    <h4>@F.Name<span class="label label-@priorityClass">@F.Type created by @F.CreatedBy.Name</span> </h4>
+                    <p>@F.Description</p>
+                    <a href="@url" class="btn btn-sm btn-@priorityClass"><i class="glyphicon glyphicon-eye-open" style="padding-right: 10px;"></i>View @F.Type</a>
+                    @if (!F.Status)
+                    {
+                        <form class="mark-complete" style="display: inline;">
+                            <input type="hidden" name="ID" value="@F.ID" />
+                            <input type="hidden" name="type" value="@type" />
+                            <button class="btn btn-sm btn-@priorityClass" type="submit">
+                                <i class="glyphicon glyphicon-ok" style="padding-right: 10px;"></i>
+                                Mark Completed
+                            </button>
+                        </form>
+                    }
+                </div>    
+                }
+            }
+            else
+            {
+                <br />   
+                <div class="alert alert-danger">
+                    <p style="text-align:center;"><strong>Oh, snap. </strong>Nothing to new to show.</p>
+                </div>
+            }
+
         </div>
         <div class="col-md-4">
             <br />
-         @Html.Partial("_RightPanel",Model)   
+            @Html.Partial("_RightPanel", Model)
         </div>
     </div>
 </section>
 
-@Html.Partial("_BottomScripts", Model);
-<footer>
-</footer>
+@Html.Partial("_BottomScripts", null)

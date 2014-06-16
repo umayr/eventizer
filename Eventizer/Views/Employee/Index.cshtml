@@ -1,0 +1,71 @@
+﻿@model Tuple<List<Eventizer.Models.Employee>, Eventizer.Models.Employee>
+@{
+    ViewBag.Title = "All Employees";
+
+    ViewBag.isAddSubtask = false;
+    ViewBag.isAddTask = false;
+    ViewBag.isHighlightedTask = false;
+
+    List<Eventizer.Models.Employee> Employees = Model.Item1;
+    Eventizer.Models.Employee LoggedIn = Model.Item2;
+}
+
+@Html.Partial("_Navigation", LoggedIn)
+<section id="controls">
+    <div class="container-fluid">
+        <div class="col-md-8">
+            <br />
+            <div class="panel panel-default">
+                <div class="panel-heading">All Employee</div>
+                @if (Employees.Count > 0)
+                {
+                    <table class="table table-bordered table-hover table-striped">
+                        <thead>
+                            <tr>
+                                <td>#</td>
+                                <td><strong>Name</strong></td>
+                                <td><strong>Email</strong></td>
+                                <td><strong>Phone</strong></td>
+                                <td><strong>Designation</strong></td>
+                                <td><strong>Manager (if any)</strong></td>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @{ int i = 1;}
+                            @foreach (Eventizer.Models.Employee E in Employees)
+                            {
+                                <tr style="overflow: hidden;">
+                                    <td>@i</td>
+                                    <td>@E.Name</td>
+                                    <td>@E.Email</td>
+                                    <td>@E.Phone</td>
+                                    <td>@E.Designation</td>
+                                    <td>@(E.Manager != null ? E.Manager.Name : "none")</td>
+                                </tr>
+                                i++;
+                            }
+
+                        </tbody>
+                    </table>
+                }
+                else
+                {
+                    <div class="panel-body">
+                        <div class="alert alert-danger" style="text-align: center; margin-bottom: 0;">
+                            <p style="padding-bottom: 10px;">Looks like you're the only one.</p>
+
+                            <a href="#" class="btn btn-danger btn-sm">Add new employee</a>
+                        </div>
+
+                    </div>
+                }
+            </div>
+        </div>
+        <div class="col-md-4">
+            <br />
+            @Html.Partial("_RightPanel", null)
+        </div>
+    </div>
+</section>
+
+@Html.Partial("_BottomScripts", null)

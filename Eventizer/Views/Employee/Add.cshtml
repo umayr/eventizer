@@ -1,0 +1,186 @@
+﻿@model Eventizer.Models.Employee
+@{
+    ViewBag.Title = "Register";
+}
+@Html.Partial("_Navigation", Model)
+
+
+<section id="controls">
+    <div class="container-fluid">
+        <div class="col-md-8">
+<div class="index">
+    <div class="row register-box">
+        <form role="form" id="register-form">
+            <div class="col-md-offset-3 col-md-6">
+                <div class="alert-wrap">
+                    <div class="alert alert-danger">
+                        <strong>Geez.</strong> Complete all the fields.
+                    </div>
+                    <div class="alert alert-success">
+                        Redirecting you to dashboard.
+                    </div>
+                    <div class="alert alert-warning">
+                        <strong>Something went wrong.</strong> Try again later.
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="name">Name</label>
+                    <input type="text" class="form-control" name="name" id="name" placeholder="Enter complete name">
+                </div>
+                <div class="form-group">
+                    <label for="email">Email address</label>
+                    <input type="email" class="form-control" name="email" id="email" placeholder="Enter working email address">
+                </div>
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <input type="password" class="form-control" name="password" id="password" placeholder="Some strong password">
+                </div>
+
+                <div class="form-group">
+                    <label for="phone">Phone</label>
+                    <input type="text" class="form-control" name="phone" id="phone" placeholder="Phone number">
+                </div>
+                <div class="form-group">
+                    <input type="hidden" name="designation" id="designation" value="Supervisor" />
+                    <div class="btn-group">
+                        <button type="button" class="btn btn-default btn-toggle">Manager</button>
+                        <button type="button" class="btn btn-success btn-toggle">Supervisor</button>
+                    </div>
+                </div>
+                <div class="form-group" id="manager-name">
+                    <label for="manager">Manager Name</label>
+                    <input type="hidden" name="manager_id" id="manager-id" value="0" />
+                    <br />
+                    <input type="text" class="form-control" id="manager" placeholder="Enter manager name">
+                </div>
+                <button type="submit" class="btn btn-primary">Register</button>
+            </div>
+            <script>
+                $('.btn-toggle').click(function () {
+                    $('.btn-toggle').removeClass('btn-success').addClass('btn-default');
+                    $(this).removeClass('btn-default').addClass('btn-success');
+                    $('#designation').val($(this).text());
+                    if ($(this).text() == 'Manager') {
+                        $('#manager-name').stop().slideUp();
+                        $('#manager-id').val(0);
+                    }
+                    else {
+                        $('#manager-name').stop().slideDown();
+                    }
+                });
+
+                var substringMatcher = function (strs) {
+                    return function findMatches(q, cb) {
+                        var matches, substringRegex;
+
+                        // an array that will be populated with substring matches
+                        matches = [];
+
+                        // regex used to determine if a string contains the substring `q`
+                        substrRegex = new RegExp(q, 'i');
+
+                        // iterate through the pool of strings and for any string that
+                        // contains the substring `q`, add it to the `matches` array
+                        $.each(strs, function (i, str) {
+                            if (substrRegex.test(str)) {
+                                // the typeahead jQuery plugin expects suggestions to a
+                                // JavaScript object, refer to typeahead docs for more info
+                                matches.push({ value: str });
+                            }
+                        });
+
+                        cb(matches);
+                    };
+                };
+
+                var employees = { id : @Html.Raw(ViewBag.EmployeeIds), names: @Html.Raw(ViewBag.EmployeeNames)} ;
+
+                $('#manager').typeahead({
+                    hint: true,
+                    highlight: true,
+                    minLength: 1
+                },
+                {
+                    name: 'name',
+                    displayKey: 'value',
+                    source: substringMatcher(employees.names)
+                });
+
+                $('#manager').blur(function(){
+                    var val = $(this).val();
+                    if(val != undefined || val != null){
+                        $('#manager-id').val(employees.id[$.inArray(val, employees.names)]);
+                    }
+                });
+                
+                $(document).ready(function () {
+                    var request;
+                    $('#register-form').submit(function (e) {
+
+                        if (request) {
+                            request.abort();
+                        }
+                        var $form = $(this);
+                        var $inputs = $form.find("input, select, button, textarea");
+                        var serializedData = $form.serialize();
+
+                        $inputs.prop("disabled", true);
+
+                        console.log('data' +serializedData);
+
+                        request = $.ajax({
+                            url: "@Url.Action("Register", "Ajax")",
+                            type: "post",
+                            data: serializedData
+                        });
+
+                        request.done(function (response, textStatus, jqXHR) {
+                            $('.alert').hide();
+                            console.log(response);
+                            if (response == 0) {
+                                $('.alert-danger').stop().fadeIn();
+                            }
+                            else if (response == 1) {
+                                $('.alert-success').stop().fadeIn();
+                                window.location = "/Dashboard";
+                            }
+                            else {
+                                $('.alert-warning').stop().fadeIn();
+                            }
+                        });
+
+                        request.fail(function (jqXHR, textStatus, errorThrown) {
+                            console.error(
+                                "The following error occured: " +
+                                    textStatus, errorThrown
+                            );
+                        });
+
+                        request.always(function () {
+                            $inputs.prop("disabled", false);
+                        });
+
+                        e.preventDefault();
+                    });
+                });
+
+                showAlert = function (heading, text) {
+                    var modalMarkup = '<div class="modal fade" id="modal-alert"><div class="modal-dialog"><div class="modal-content"><div class="modal-header"><button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button><h4 class="modal-title">' + heading + '</h4></div><div class="modal-body"><p>' + text + '</p></div></div></div></div>';
+
+                    $('body').append(modalMarkup);
+                    $('#modal-alert').modal();
+
+                };
+
+            </script>
+        </form>
+    </div>
+</div>            
+        </div>
+        <div class="col-md-4">
+            <br />
+            @Html.Partial("_RightPanel", null)
+        </div>
+    </div>
+</section>
+@Html.Partial("_BottomScripts", null)

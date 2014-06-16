@@ -1,83 +1,122 @@
 ﻿@model Eventizer.Models.Current
 @{
     ViewBag.Title = Model.Task.Name;
-}
 
+    string ClassSuffix = Eventizer.Helpers.Essentials.CalculatePriorityClass(Model.Task.Deadline, Model.Task.Status);
+    string TaskColor = Eventizer.Helpers.Essentials.CalculatePriorityColor(Model.Task.Deadline, Model.Task.Status);
+
+    bool isDeadlineOver = Eventizer.Helpers.Essentials.IfDeadlineHasPassed(Model.Task.Deadline, Model.Task.Status);
+
+    ViewBag.isAddSubtask = isDeadlineOver ? false : true;
+    ViewBag.isAddTask = false;
+
+    ViewBag.addTaskToEvent = null;
+    ViewBag.addSubtaskToTask = Model.Task;
+    ViewBag.isHighlightedEvent = false;
+    ViewBag.isHighlightedTask = true;
+}
 @Html.Partial("_Navigation", Model.Employee)
 
 <section id="controls">
     <div class="container-fluid">
         <div class="col-md-8">
-            <div class="jumbotron" style="background: @Eventizer.Helpers.Essentials.CalculatePriority(Model.Task); color: #FFF;">
+            <div class="jumbotron" style="background: @TaskColor; color: #FFF;">
                 <h1>@Model.Task.Name</h1>
                 <h3>@Model.Task.Description</h3>
-                <br />
-                <button class="btn btn-default btn-lg">Edit Task</button>
+
+
+
+                @if (!Model.Task.Status)
+                {
+                    <br />
+                    if (isDeadlineOver)
+                    {
+                    <button class="btn btn-default btn-lg">
+                        <i class="glyphicon glyphicon-edit" style="padding-right: 10px;"></i>
+                        Edit Task
+                    </button>
+                    }
+                    <form class="mark-complete" style="display: inline;">
+                        <input type="hidden" name="ID" value="@Model.Task.ID" />
+                        <input type="hidden" name="type" value="1" />
+                        <button class="btn btn-default btn-lg" type="submit">
+                            <i class="glyphicon glyphicon-ok" style="padding-right: 10px;"></i>
+                            Mark Completed
+                        </button>
+                    </form>
+                }
             </div>
 
-            <table class="table table-bordered table-hover table-striped">
-                <thead>
-                    <tr>
-                        <td>#</td>
-                        <td><strong>Subtask Name</strong></td>
-                        <td><strong>Subtask Description</strong></td>
-                        <td><strong>Created by</strong></td>
-                        <td><strong>Assigned to</strong></td>
-                        <td><strong>Options</strong></td>
-                    </tr>
-                </thead>
-                <tbody>
-                    @{ int i = 1;}
-                    @foreach (Eventizer.Models.Subtask S in Model.Task.Subtasks)
+            @if (isDeadlineOver && !Model.Task.Status)
+            { 
+                <div class="alert alert-danger">
+                    <p>
+                        The deadline for this task has over. Mark this event complete.
+                    </p>
+                </div>
+            }
+            <div class="panel panel-default panel-@ClassSuffix">
+                <div class="panel-heading">Task Details</div>
+                <div class="panel-body">
+                    <p>Event on <strong>@Model.Task.Deadline.ToLongDateString()</strong></p>
+                    <p>Created by <strong>@Model.Task.CreatedBy.Name</strong> on <strong>@Model.Task.DateCreated.ToLongDateString()</strong></p>
+                    <p>Contains @Model.Task.TotalSubtasks() subtasks, and requires @Model.Task.TotalAssets() assets &amp; @Model.Task.TotalLaboursRequired() labours.</p>
+                    <p>Status: <span class="label label-@ClassSuffix" style="font-size:14px;">@(Model.Task.Status ? "Completed" : "Pending")</span> </p>
+                </div>
+            </div>
+            <div id="compact-view" class="view-toggle">
+                <div class="panel panel-default">
+                    <div class="panel-heading">Task's Subtasks</div>
+                    @if (Model.Task.Subtasks.Count > 0)
                     {
-                    <tr>
-                        <td>@i</td>
-                        <td>@S.Name</td>
-                        <td>@Eventizer.Helpers.Essentials.TrimLongText(S.Description,50)</td>
-                        <td><a href="#">@S.CreatedBy.Name</a></td>
-                        <td><a href="#">@S.AssignedTo.Name</a></td>
-                        <td><a href="@Href("/Tasks/View/" + S.ID)" class="btn btn-xs btn-info btn-block">View</a></td>
-                    </tr>
-                        i++;
+                        <table class="table table-bordered table-hover table-striped">
+                            <thead>
+                                <tr>
+                                    <td>#</td>
+                                    <td><strong>Subtask Name</strong></td>
+                                    <td><strong>Subtask Description</strong></td>
+                                    <td><strong>Created by</strong></td>
+                                    <td><strong>Assigned to</strong></td>
+                                    <td><strong>Options</strong></td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @{ int k = 1;}
+                                @foreach (Eventizer.Models.Subtask S in Model.Task.Subtasks)
+                                {
+                                    <tr>
+                                        <td>@k</td>
+                                        <td>@S.Name</td>
+                                        <td>@Eventizer.Helpers.Essentials.TrimLongText(S.Description, 50)</td>
+                                        <td><a href="#">@S.CreatedBy.Name</a></td>
+                                        <td><a href="#">@S.AssignedTo.Name</a></td>
+                                        <td><a href="@Href("/Dashboard/Subtasks/View/" + S.ID)" class="btn btn-xs btn-info btn-block">View</a></td>
+                                    </tr>
+                                    k++;
+                                }
+
+                            </tbody>
+                        </table>
                     }
-                    
-                </tbody>
-            </table>
+                    else
+                    {
+                        <div class="panel-body">
+                            <div class="alert alert-danger" style="text-align: center; margin-bottom: 0;">
+                                <p><strong>Oh, snap. </strong>No subtasks have been assigned yet</p>
+                            </div>
+                        </div>
+                    }
+                </div>
+
+            </div>
         </div>
         <div class="col-md-4">
             <br />
-            <div class="panel panel-default ">
-                <div class="panel-heading">
-                    Events
-                </div>
-                <div class="panel-body">
-                    <button class="btn btn-info" data-toggle="modal" data-target="#event-modal">Create new Event</button>
-                    <button class="btn btn-default">View Pending</button>
-                    <button class="btn btn-default">View All</button>
-                </div>
-            </div>
-            <div class="panel panel-default panel-info">
-                <div class="panel-heading">
-                    Tasks
-                </div>
-                <div class="panel-body">
-                    <button class="btn btn-info">Add Task</button>
-                    <button class="btn btn-default">View Pending</button>
-                    <button class="btn btn-default">View All</button>
-                </div>
-            </div>
-            <div class="panel panel-default">
-                <div class="panel-heading">
-                    Sub-Tasks
-                </div>
-                <div class="panel-body">
-                    <button class="btn btn-info">Add Subtask</button>
-                    <button class="btn btn-default">View Pending</button>
-                    <button class="btn btn-default">View All</button>
-                </div>
-            </div>
+            @Html.Partial("_RightPanel", null)
         </div>
     </div>
 </section>
+
+@Html.Partial("_BottomScripts", null)
 
 

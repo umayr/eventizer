@@ -116,9 +116,9 @@ namespace Eventizer.Controllers
             }
         }
         [HttpPost]
-        public int CreateSubtask(string name, string description, string deadline, int assigned_to = 0, int labours_required = 0)
+        public int CreateSubtask(string name, string description, string deadline, int task_id_for_subtask = 0, int assigned_to = 0, int labours_required = 0, int asset_id = 0, int asset_quantity = 0)
         {
-            if (string.IsNullOrEmpty(name) || string.IsNullOrEmpty(description) || string.IsNullOrEmpty(deadline) || assigned_to == 0 || labours_required == 0)
+            if (string.IsNullOrEmpty(name) || string.IsNullOrEmpty(description) || string.IsNullOrEmpty(deadline) || assigned_to == 0 || labours_required == 0 || task_id_for_subtask == 0 || asset_id == 0 || asset_quantity == 0)
             {
                 return 0;
             }
@@ -131,8 +131,26 @@ namespace Eventizer.Controllers
                 Params.Add(new System.Data.SqlClient.SqlParameter("@deadline", deadline));
                 Params.Add(new System.Data.SqlClient.SqlParameter("@assigned_to", assigned_to));
                 Params.Add(new System.Data.SqlClient.SqlParameter("@labours_required", labours_required));
-
-                return (new Database()).ExecuteProcedure("usp_add_subtask", Params) ? 1 : -1;
+                Database Db = new Database();
+                int subtaskID = Db.ExecuteProcedureWithScopeID("usp_add_subtask", Params);
+                if (subtaskID > 0)
+                {
+                    if (AddAssetToSubtask(subtaskID, asset_id, asset_quantity))
+                    {
+                        Params.Clear();
+                        Params.Add(new System.Data.SqlClient.SqlParameter("@task_id", task_id_for_subtask));
+                        Params.Add(new System.Data.SqlClient.SqlParameter("@subtask_id", subtaskID));
+                        return (Db.ExecuteProcedure("usp_add_subtask_to_task", Params) ? subtaskID : 0);
+                    }
+                    else
+                    {
+                        return 0;
+                    }
+                }
+                else
+                {
+                    return 0;
+                }
             }
             catch (Exception)
             {
@@ -160,6 +178,47 @@ namespace Eventizer.Controllers
                 return -1;
             }
         }
+        [HttpPost]
+        public bool MarkComplete(int ID = -1, int type = -1)
+        {
 
+            if (ID == -1 || type == -1)
+            {
+                return false;
+            }
+            try
+            {
+                List<System.Data.SqlClient.SqlParameter> Params = new List<System.Data.SqlClient.SqlParameter>();
+                Params.Add(new System.Data.SqlClient.SqlParameter("@id", ID));
+                Params.Add(new System.Data.SqlClient.SqlParameter("@type", type));
+                return (new Database()).ExecuteProcedure("usp_mark_complete", Params);
+            }
+            catch (Exception)
+            {
+                return false;
+            }
+        }
+
+        private bool AddAssetToSubtask(int subtask_id, int asset_id = 0, int asset_quantity = 0)
+        {
+            if (asset_id == 0 || asset_quantity == 0)
+            {
+                return false;
+            }
+            try
+            {
+                List<System.Data.SqlClient.SqlParameter> Params = new List<System.Data.SqlClient.SqlParameter>();
+                Params.Add(new System.Data.SqlClient.SqlParameter("@subtask_id", subtask_id));
+                Params.Add(new System.Data.SqlClient.SqlParameter("@asset_id", asset_id));
+                Params.Add(new System.Data.SqlClient.SqlParameter("@quantity", asset_quantity));
+
+                return (new Database()).ExecuteProcedure("usp_add_asset_to_subtask", Params);
+            }
+            catch (Exception)
+            {
+                return false;
+            }
+
+        }
     }
 }

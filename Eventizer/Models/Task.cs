@@ -93,6 +93,27 @@ namespace Eventizer.Models
             return subtasks;
         }
 
+        public static List<Task> FetchAllTasks(SqlDataReader reader)
+        {
+            List<Task> Tasks = new List<Task>();
+
+            while (reader.Read())
+            {
+
+                Task E = new Task();
+                E.ID = (int)reader["id"];
+                E.Name = reader["name"].ToString();
+                E.Description = reader["description"].ToString();
+                E.Status = (bool)reader["status"];
+                E.CreatedBy = Employee.FetchEmployeeByID((int)reader["created_by"]);
+                E.DateCreated = DateTime.Parse(reader["date_created"].ToString());
+                E.Deadline = DateTime.Parse(reader["deadline"].ToString());
+                Tasks.Add(E);
+            }
+            reader.Close();
+            reader.Dispose();
+            return Tasks;
+        }
 
     }
 }

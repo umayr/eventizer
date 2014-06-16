@@ -93,5 +93,32 @@ namespace Eventizer.Models
             return employee;
         }
 
+        public static List<Employee> FetchAllEmployees()
+        {
+            List<Employee> employees = new List<Employee>();
+            using (System.Data.SqlClient.SqlDataReader reader = (new Database()).SelectAllFromView("vw_all_employees"))
+            {
+                while (reader.Read())
+                {
+                    Employee E = new Employee();
+                    E.ID = (int)reader["id"];
+                    E.Name = reader["name"].ToString();
+                    E.Email = reader["email"].ToString();
+                    E.Password = reader["password"].ToString();
+                    E.Phone = reader["phone"].ToString();
+                    E.Designation = reader["designation"].ToString();
+                    if ((int)reader["manager_id"] != 0)
+                    {
+                        E.Manager = Employee.FetchEmployeeByID((int)reader["manager_id"]);
+                    }
+                    else
+                    {
+                        E.Manager = null;
+                    }
+                    employees.Add(E);
+                }
+            }
+            return employees;
+        }
     }
 }

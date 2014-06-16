@@ -1,6 +1,48 @@
-﻿@model Eventizer.Models.Current
-<script>
-    function initAjaxRequest($control, URL, redirectURL) {
+﻿<script>
+    function MiniAjaxRoutine($control, URL) {
+        var request;
+        $control.submit(function (e) {
+
+            if (request) {
+                request.abort();
+            }
+            var $form = $(this);
+            var $inputs = $form.find("input, select, button, textarea");
+            var serializedData = $form.serialize();
+
+            $inputs.prop("disabled", true);
+
+            request = $.ajax({
+                url: URL,
+                type: "post",
+                data: serializedData
+            });
+
+            request.done(function (response, textStatus, jqXHR) {
+                if (response == 0 || response == false) {
+                    ShowAlert("Error", "Something went wrong. Please try again later.");
+                }
+                else {
+                    localStorage.setItem("page_y", document.getElementsByTagName("body")[0].scrollTop);
+                    window.location = window.location.href;
+                }
+            });
+
+            request.fail(function (jqXHR, textStatus, errorThrown) {
+                console.error(
+                    "The following error occured: " +
+                        textStatus, errorThrown
+                );
+            });
+
+            request.always(function () {
+                $inputs.prop("disabled", false);
+            });
+
+            e.preventDefault();
+        });
+    }
+    function AjaxRequestWithRedirect($control, URL, redirectURL, addSuffix) {
         var request;
         $control.submit(function (e) {
 
@@ -31,7 +73,12 @@
                 }
                 else if (response >= 1) {
                     $('.alert-success').stop().fadeIn();
-                    setTimeout(function () { window.location = redirectURL + response; }, 1000);
+                    if (Boolean(addSuffix)) {
+                        setTimeout(function () { window.location = redirectURL + response; }, 1000);
+                    }
+                    else {
+                        setTimeout(function () { window.location = redirectURL; }, 1000);
+                    }
                 }
                 else {
                     $('.alert-warning').stop().fadeIn();
@@ -52,8 +99,30 @@
             e.preventDefault();
         });
     }
-    $(document).ready(function () {
-        initAjaxRequest($('#event-form'), "@Url.Action("CreateEvent", "Ajax")", "@Href("/Dashboard/events/view/")");
-        initAjaxRequest($('#task-form'), "@Url.Action("CreateTask", "Ajax")", "@Href("/Tasks/view/")");
+    function ShowAlert(title, message) {
+        var _alert, _body, _title;
+        _alert = $('#alert');
+        _body = _alert.find('.modal-body');
+        _title = _alert.find('.modal-title');
+        _body.html($('<p />').text(message));
+        _title.text(title);
+
+        _alert.modal();
+    }
+    $(window).load(function () {
+        if (localStorage.length > 0) {
+            document.getElementsByTagName("body")[0].scrollTop = localStorage.getItem("page_y");
+        }
     });
+    $(document).ready(function () {
+        AjaxRequestWithRedirect($('#event-form'), "@Url.Action("CreateEvent", "Ajax")", "@Href("/Dashboard/events/view/")", true);
+        AjaxRequestWithRedirect($('#task-form'), "@Url.Action("CreateTask", "Ajax")", "@Href("/Dashboard/tasks/view/")", true);
+        AjaxRequestWithRedirect($('#subtask-form'), "@Url.Action("CreateSubtask", "Ajax")", "@Href("/Dashboard/subtasks/view/")", true);
+        AjaxRequestWithRedirect($('#asset-form'), "@Url.Action("AddAsset", "Ajax")", "@Href("/Dashboard/assets/")", false);
+        MiniAjaxRoutine($('form.mark-complete'), "@Url.Action("MarkComplete", "Ajax")");
+    });
+
+
+
+
 </script>

@@ -11,8 +11,6 @@ namespace Eventizer.Controllers
 {
     public class EventsController : Controller
     {
-        //
-        // GET: /Events/
 
         public ActionResult View(int id)
         {
@@ -60,6 +58,10 @@ namespace Eventizer.Controllers
             return View(C);
         }
 
+        /// <summary>
+        /// Injecting Employee Details into Viewbag 
+        /// for Assignation.
+        /// </summary>
         private void InjectEmployeeDetails()
         {
             MiniEmployeesList o = Employee.GetEmployeeDetails();

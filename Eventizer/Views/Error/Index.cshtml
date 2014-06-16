@@ -1,0 +1,46 @@
+﻿@model Int32    
+@{
+    Layout = null;
+}
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Kavand | Error</title>
+</head>
+<body>
+    <div>
+        There was an error with your request. The error is:<br />
+        <p style="color: Red;">
+            @switch (Model)
+            {
+                case 401:
+                    {
+                <span>Your message goes here...</span>
+                    }
+                    break;
+                case 403:
+                    {
+                <span>Your message goes here...</span>
+                    }
+                    break;
+                case 404:
+                    {
+                <span>Your message goes here...</span>
+                    }
+                    break;
+                case 500:
+                    {
+                <span>Your message goes here...</span>
+                    }
+                    break;
+                //and more cases for more error-codes...
+                default:
+                    {
+                <span>Unknown error!!!</span>
+                    }
+                    break;
+            }
+        </p>
+    </div>
+</body>
+</html>

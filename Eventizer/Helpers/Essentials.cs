@@ -57,113 +57,35 @@ namespace Eventizer.Helpers
             }
         }
 
-        public static string CalculatePriority(Task Task)
-        {
-            TimeSpan T = Task.Deadline.Subtract(DateTime.Now);
-            double daysLeft = T.TotalDays;
-            if (daysLeft > 0)
-            {
-                if (daysLeft < 2.5)
-                {
-                    return Essentials.PRIORITY_COLORS[0];
-                }
-                else if (daysLeft < 6)
-                {
-                    return Essentials.PRIORITY_COLORS[1];
-                }
-                else
-                {
-                    return Essentials.PRIORITY_COLORS[2];
-                }
-            }
-            else
-            {
-                if (Task.Status)
-                {
-                    return Essentials.PRIORITY_COLORS[3];
-                }
-                else
-                {
-                    return Essentials.PRIORITY_COLORS[0];
-                }
-            }
-
-        }
-        public static string CalculatePriority(Subtask Subtask)
-        {
-            TimeSpan T = Subtask.Deadline.Subtract(DateTime.Now);
-            double daysLeft = T.TotalDays;
-            if (daysLeft > 0)
-            {
-                if (daysLeft < 2.5)
-                {
-                    return Essentials.PRIORITY_COLORS[0];
-                }
-                else if (daysLeft < 6)
-                {
-                    return Essentials.PRIORITY_COLORS[1];
-                }
-                else
-                {
-                    return Essentials.PRIORITY_COLORS[2];
-                }
-            }
-            else
-            {
-                if (Subtask.Status)
-                {
-                    return Essentials.PRIORITY_COLORS[3];
-                }
-                else
-                {
-                    return Essentials.PRIORITY_COLORS[0];
-                }
-            }
-
-        }
-        public static string CalculatePriority(Event Event)
-        {
-            TimeSpan T = Event.Deadline.Subtract(DateTime.Now);
-            double daysLeft = T.TotalDays;
-            if (daysLeft > 0)
-            {
-                if (daysLeft < 2.5)
-                {
-                    return Essentials.PRIORITY_COLORS[0];
-                }
-                else if (daysLeft < 6)
-                {
-                    return Essentials.PRIORITY_COLORS[1];
-                }
-                else
-                {
-                    return Essentials.PRIORITY_COLORS[2];
-                }
-            }
-            else
-            {
-                if (Event.Status)
-                {
-                    return Essentials.PRIORITY_COLORS[3];
-                }
-                else
-                {
-                    return Essentials.PRIORITY_COLORS[0];
-                }
-            }
-
-        }
-
         public static string TrimLongText(string Text, int TrimTo = 100)
         {
-            return Text.Substring(0, TrimTo) + "...";
+            if (string.IsNullOrEmpty(Text))
+            {
+                return "...";
+            }
+            else
+            {
+                if (TrimTo > Text.Length)
+                {
+                    return Text;
+                }
+                else
+                {
+                    return Text.Substring(0, TrimTo) + "...";
+                }
+            }
+
         }
         private static int CalculatePriority(DateTime Deadline, bool Status)
         {
-            TimeSpan T = Deadline.Subtract(DateTime.Now);
-            double daysLeft = T.TotalDays;
-            if (daysLeft > 0)
+            if (Status)
             {
+                return 3;
+            }
+            else
+            {
+                TimeSpan T = Deadline.Subtract(DateTime.Now);
+                double daysLeft = T.TotalDays;
                 if (daysLeft < 2.5)
                 {
                     return 0;
@@ -177,17 +99,6 @@ namespace Eventizer.Helpers
                     return 2;
                 }
             }
-            else
-            {
-                if (Status)
-                {
-                    return 3;
-                }
-                else
-                {
-                    return 0;
-                }
-            }
 
         }
 
@@ -198,6 +109,46 @@ namespace Eventizer.Helpers
         public static string CalculatePriorityClass(DateTime Deadline, bool Status)
         {
             return Essentials.PRIORITY_CLASS[Essentials.CalculatePriority(Deadline, Status)];
+        }
+
+        public static bool IfDeadlineHasPassed(DateTime Deadline, bool Status)
+        {
+            if (Status)
+            {
+                return true;
+            }
+            else
+            {
+                TimeSpan T = Deadline.Subtract(DateTime.Now);
+                double daysLeft = T.TotalDays;
+                if (daysLeft < 0)
+                {
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }
+            }
+
+        }
+
+        public static int GetFeedType(string Type)
+        {
+            int type = -1;
+            if (Type == "Event")
+            {
+                type = 0;
+            }
+            else if (Type == "Task")
+            {
+                type = 1;
+            }
+            else if (Type == "Subtasks")
+            {
+                type = 2;
+            }
+            return type;
         }
     }
 }

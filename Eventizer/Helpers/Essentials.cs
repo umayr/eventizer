@@ -144,7 +144,7 @@ namespace Eventizer.Helpers
             {
                 type = 1;
             }
-            else if (Type == "Subtasks")
+            else if (Type == "Subtask")
             {
                 type = 2;
             }

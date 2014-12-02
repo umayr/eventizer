@@ -40,7 +40,7 @@ namespace Eventizer.Helpers
                 return null;
             }
         }
-
+        
         public SqlDataReader SelectFromViewWithWhere(string viewName, string whereClause)
         {
 
@@ -52,7 +52,6 @@ namespace Eventizer.Helpers
                 cmd.CommandType = System.Data.CommandType.Text;
                 cmd.CommandText = string.Format("SELECT * FROM {0} where {1};", viewName, whereClause);
                 return cmd.ExecuteReader();
-
             }
             catch (Exception)
             {

@@ -1,0 +1,192 @@
+﻿@model Tuple<Eventizer.Models.Employee, Eventizer.Models.Employee>
+@{
+  
+    Eventizer.Models.Employee Employee = Model.Item2;
+    Eventizer.Models.Employee LoggedIn = Model.Item1;
+
+    ViewBag.Title = Employee.Name;
+}
+
+@Html.Partial("_Navigation", LoggedIn)
+
+<div class="container-fluid">
+    <div class="col-md-4">
+        <div class="jumbotron" style="background: #222; color: #FFF; padding-bottom:0;margin-bottom:0;">
+                <h1 style="font-size:34px;">@Employee.Name</h1>
+            <br />
+            <div class="employee-details">
+                <table>
+                    <tr>
+                        <td>Email:</td>
+                        <td>@Employee.Email</td>
+                    </tr>
+                    <tr>
+                        <td>Designation:</td>
+                        <td>@Employee.Designation</td>
+                    </tr>
+                    <tr>
+                        <td>Phone:</td>
+                        <td>@Employee.Phone</td>
+                    </tr>
+                    
+                    <tr>
+                        <td>Events:</td>
+                        <td>@ViewBag.Events.Count ( @ViewBag.PendingEvents pending / @(ViewBag.Events.Count - ViewBag.PendingEvents) completed)</td>
+                    </tr>
+                    
+                    <tr>
+                        <td>Tasks:</td>
+                        <td>@ViewBag.Tasks.Count ( @ViewBag.PendingTasks pending / @(ViewBag.Tasks.Count - ViewBag.PendingTasks) completed)</td>
+                    </tr>
+                    
+                    <tr>
+                        <td>Subtasks:</td>
+                        <td>@ViewBag.Subtasks.Count ( @ViewBag.PendingSubtasks pending / @(ViewBag.Subtasks.Count - ViewBag.PendingSubtasks) completed)</td>
+                    </tr>
+                </table>
+            </div>
+                
+            </div>
+    </div>
+    <div class="col-md-8">
+        <br />
+        <div class="panel panel-default">
+                <div class="panel-heading">@(ViewBag.Events.Count > 0 ? "All Events By " + ViewBag.Events[0].CreatedBy.Name : "Sorry")</div>
+                @if (ViewBag.Events.Count > 0)
+                {
+                    <table class="table table-bordered table-hover table-striped">
+                        <thead>
+                            <tr>
+                                <td style="border-left: 4px solid transparent">#</td>
+                                <td><strong>Event Name</strong></td>
+                                <td><strong>Event Description</strong></td>
+                                <td><strong>Created on</strong></td>
+                                <td><strong>Status</strong></td>
+                                <td><strong>Options</strong></td>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @{ int i = 1;}
+                            @foreach (Eventizer.Models.Event E in ViewBag.Events)
+                            {
+                                
+                                <tr style="overflow: hidden;">
+                                    <td style="border-left:4px solid @Eventizer.Helpers.Essentials.CalculatePriorityColor(E.Deadline, E.Status);">@i</td>
+                                    <td>@E.Name</td>
+                                    <td>@Eventizer.Helpers.Essentials.TrimLongText(E.Description, 60)</td>
+                                    <td style="text-align:center;">@E.DateCreated.ToShortDateString()</td>
+                                    <td>
+                                        @(E.Status ? "Completed" : "Pending")
+                                    </td>
+                                    <td><a href="@Href("/Dashboard/events/view/" + E.ID)" class="btn btn-xs btn-info btn-block">View</a></td>
+                                </tr>
+                                i++;
+                            }
+
+                        </tbody>
+                    </table>
+                }
+                else
+                {
+                    <div class="panel-body">
+                            <p style="text-align:center;">This person hasn't created any event yet.</p>
+
+                    </div>
+                }
+            </div>
+<div class="panel panel-default">
+                <div class="panel-heading">@(ViewBag.Tasks.Count > 0 ? "All Tasks By " + ViewBag.Tasks[0].CreatedBy.Name : "Sorry")</div>
+                @if (ViewBag.Tasks.Count > 0)
+                {
+                    <table class="table table-bordered table-hover table-striped">
+                        <thead>
+                            <tr>
+                                <td style="border-left: 4px solid transparent">#</td>
+                                <td><strong>Task Name</strong></td>
+                                <td><strong>Task Description</strong></td>
+                                <td><strong>Created on</strong></td>
+                                <td><strong>Status</strong></td>
+                                <td><strong>Options</strong></td>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @{ int i = 1;}
+                            @foreach (Eventizer.Models.Task E in ViewBag.Tasks)
+                            {
+                                
+                                <tr style="overflow: hidden;">
+                                    <td style="border-left:4px solid @Eventizer.Helpers.Essentials.CalculatePriorityColor(E.Deadline, E.Status);">@i</td>
+                                    <td>@E.Name</td>
+                                    <td>@Eventizer.Helpers.Essentials.TrimLongText(E.Description, 60)</td>
+                                    <td style="text-align:center;">@E.DateCreated.ToShortDateString()</td>
+                                    <td>
+                                        @(E.Status ? "Completed" : "Pending")
+                                    </td>
+                                    <td><a href="@Href("/Dashboard/tasks/view/" + E.ID)" class="btn btn-xs btn-info btn-block">View</a></td>
+                                </tr>
+                                i++;
+                            }
+
+                        </tbody>
+                    </table>
+                }
+                else
+                {
+                    <div class="panel-body">
+                            <p style="text-align:center;">This person hasn't created any task yet.</p>
+
+                    </div>
+                }
+            </div>
+<div class="panel panel-default">
+                <div class="panel-heading">@(ViewBag.Subtasks.Count > 0 ? "All Subtasks By " + ViewBag.Subtasks[0].CreatedBy.Name : "Sorry")</div>
+                @if (ViewBag.Subtasks.Count > 0)
+                {
+                    <table class="table table-bordered table-hover table-striped">
+                        <thead>
+                            <tr>
+                                <td style="border-left: 4px solid transparent">#</td>
+                                <td><strong>Subtask Name</strong></td>
+                                <td><strong>Subtask Description</strong></td>
+                                <td><strong>Created on</strong></td>
+                                <td><strong>Labours Reqd.</strong></td>
+                                <td><strong>Status</strong></td>
+                                <td><strong>Options</strong></td>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @{ int i = 1;}
+                            @foreach (Eventizer.Models.Subtask E in ViewBag.Subtasks)
+                            {
+                                
+                                <tr style="overflow: hidden;">
+                                    <td style="border-left:4px solid @Eventizer.Helpers.Essentials.CalculatePriorityColor(E.Deadline, E.Status);">@i</td>
+                                    <td>@E.Name</td>
+                                    <td>@Eventizer.Helpers.Essentials.TrimLongText(E.Description, 50)</td>
+                                    <td style="text-align:center;">@E.DateCreated.ToShortDateString()</td>
+                                    <td style="text-align:center;">@E.LaboursRequired</td>
+                                    <td>
+                                        @(E.Status ? "Completed" : "Pending")
+                                    </td>
+                                    <td><a href="@Href("/Dashboard/subtasks/view/" + E.ID)" class="btn btn-xs btn-info btn-block">View</a></td>
+                                </tr>
+                                i++;
+                            }
+
+                        </tbody>
+                    </table>
+                }
+                else
+                {
+                    <div class="panel-body">
+                            <p style="text-align:center;">This person hasn't created any subtask yet.</p>
+
+                    </div>
+                }
+            </div>
+    </div>
+</div>
+
+<script>
+    $('.jumbotron').height($(window).height());
+</script>

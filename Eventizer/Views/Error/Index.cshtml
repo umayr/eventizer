@@ -1,46 +1,45 @@
 ﻿@model Int32    
-@{
-    Layout = null;
-}
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Kavand | Error</title>
-</head>
-<body>
-    <div>
-        There was an error with your request. The error is:<br />
-        <p style="color: Red;">
-            @switch (Model)
-            {
-                case 401:
-                    {
-                <span>Your message goes here...</span>
-                    }
-                    break;
-                case 403:
-                    {
-                <span>Your message goes here...</span>
-                    }
-                    break;
-                case 404:
-                    {
-                <span>Your message goes here...</span>
-                    }
-                    break;
-                case 500:
-                    {
-                <span>Your message goes here...</span>
-                    }
-                    break;
-                //and more cases for more error-codes...
-                default:
-                    {
-                <span>Unknown error!!!</span>
-                    }
-                    break;
-            }
-        </p>
+<div>
+    <div class="jumbotron" style="background: #FFF; color: #333;">
+        <h1>Error. ;(</h1>
+        @switch (Model)
+        {
+            case 401:
+                {
+            <h3>401 Unauthorized. Bitch, this stuff is not for you. Go somewhere else.</h3>
+            
+                }
+                break;
+            case 403:
+                {
+            <h3>403 Forbidden. Dude, back off. This stuff is forbidden.</h3>
+                }
+                break;
+            case 404:
+                {
+            <h3>404 Not Found. We can't find what you're looking for.</h3>
+            
+                }
+                break;
+            case 500:
+                {
+            <h3>500 Internal Server Error. Uh oh, something just got f*cked up. We'll fix it in a wee bit.</h3>
+                }
+                break;
+            default:
+                {
+            <h3>Zombie Attack. RUNNN MODAFUKKA!!!!</h3>
+                }
+                break;
+        }
+
+        <div style="height: 20px;"></div>
+        <a href="@Href("/Dashboard")" class="btn btn-danger" >
+            <i class="glyphicon glyphicon-home" style="padding-right: 10px;"></i>
+            Return to home.
+        </a>
     </div>
-</body>
-</html>
+
+
+    </p>
+</div>

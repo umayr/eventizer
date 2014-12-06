@@ -112,6 +112,7 @@
     $(window).load(function () {
         if (localStorage.length > 0) {
             document.getElementsByTagName("body")[0].scrollTop = localStorage.getItem("page_y");
+            localStorage.removeItem('page_y');
         }
     });
     $(document).ready(function () {

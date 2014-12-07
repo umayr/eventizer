@@ -85,5 +85,17 @@ namespace Eventizer.Models
             reader.Dispose();
             return Subtasks;
         }
+        public static int GetPendingSubtasks(List<Subtask> Subtasks)
+        {
+            int count = 0;
+            foreach (Subtask S in Subtasks)
+            {
+                if (!S.Status)
+                {
+                    count++;
+                }
+            }
+            return count;
+        }
     }
 }

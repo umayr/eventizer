@@ -65,7 +65,7 @@ namespace Eventizer.Models
         }
         public static Employee FetchEmployeeByEmail(string Email)
         {
-            List<SqlParameter> Param = new List<SqlParameter>();
+            List<SqlParameter> Param = new List<SqlParameter>();    
             Param.Add(new SqlParameter("@email", Email));
             Employee employee = new Employee();
 

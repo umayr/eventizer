@@ -114,6 +114,17 @@ namespace Eventizer.Models
             reader.Dispose();
             return Tasks;
         }
+        public static int GetPendingTasks(List<Task> Tasks)
+        {
+            int count = 0;
+            foreach (Task T in Tasks)
+            {
+                if (!T.Status) {
+                    count++;
+                }
+            }
+            return count;
+        }
 
     }
 }

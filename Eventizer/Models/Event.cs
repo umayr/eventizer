@@ -120,5 +120,17 @@ namespace Eventizer.Models
             }
             return count;
         }
+        public static int GetPendingEvents(List<Event> Events)
+        {
+            int count = 0;
+            foreach (Event E in Events)
+            {
+                if (!E.Status)
+                {
+                    count++;
+                }
+            }
+            return count;
+        }
     }
 }

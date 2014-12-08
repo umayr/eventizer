@@ -4,16 +4,21 @@
 
 <div class="container index">
     <div class="row">
-        <div class="col-md-offset-8 col-md-4 login-box">
+        <div class="login-box">
+            <h1>Eventizer</h1>
+
             <div class="alert-wrap">
-                <div class="alert alert-danger">
+                <div class="alert alert-danger msg-invalid">
                     <strong>Geez.</strong> Wrong Email/Password.
                 </div>
-                <div class="alert alert-success">
+                <div class="alert alert-success msg-loggedin">
                     Redirecting you to your dashboard.
                 </div>
-                <div class="alert alert-warning">
+                <div class="alert alert-warning msg-smthwentwrong">
                     <strong>Something went wrong.</strong> Try again later.
+                </div>
+                <div class="alert alert-success msg-loggedout">
+                    <strong>Yo.</strong> You've been logged out.
                 </div>
             </div>
             <form role="form" id="login-form">
@@ -27,15 +32,31 @@
                     <input type="password" class="form-control" name="password" id="password" placeholder="Password">
                 </div>
 
-                <button type="submit" class="btn btn-primary">Submit</button>
-                <a href="/Register" class="btn btn-default">Register</a>
+                <button type="submit" class="btn btn-primary btn-block">Submit</button>
             </form>
         </div>
     </div>
 </div>
 <script>
+    var urlParams;
+    (window.onpopstate = function () {
+        var match,
+            pl = /\+/g,  // Regex for replacing addition symbol with a space
+            search = /([^&=]+)=?([^&]*)/g,
+            decode = function (s) { return decodeURIComponent(s.replace(pl, " ")); },
+            query = window.location.search.substring(1);
 
+        urlParams = {};
+        while (match = search.exec(query))
+            urlParams[decode(match[1])] = decode(match[2]);
+    })();
     $(document).ready(function () {
+        if (typeof urlParams !== 'undefined') {
+            if (urlParams.Logout == 'True') {
+                $('.msg-loggedout').stop().fadeIn();
+                setTimeout(function () { $('.msg-loggedout').stop().fadeOut(); }, 2000);
+            }
+        }
         var request;
         $('#login-form').submit(function (e) {
 
@@ -48,8 +69,6 @@
 
             $inputs.prop("disabled", true);
 
-            console.log(serializedData);
-
             request = $.ajax({
                 url: "@Url.Action("Login", "Ajax")",
                 type: "post",
@@ -61,14 +80,14 @@
 
                 console.log(response);
                 if (response == 0) {
-                    $('.alert-danger').stop().fadeIn();
+                    $('.msg-invalid').stop().fadeIn();
                 }
                 else if (response == 1) {
-                    $('.alert-success').stop().fadeIn();
+                    $('.msg-loggedin').stop().fadeIn();
                     setTimeout(function () { window.location = '/Dashboard'; }, 1000);
                 }
                 else {
-                    $('.alert-warning').stop().fadeIn();
+                    $('.msg-smthwentwrong').stop().fadeIn();
                 }
             });
 

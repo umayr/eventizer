@@ -38,6 +38,11 @@ namespace Eventizer
                     "Dashboard/employee/add", // URL with parameters
                     new { controller = "Employee", action = "Add" } // Parameter defaults
                 );
+            routes.MapRoute(
+                   "View Employee Details", // Route name
+                   "Dashboard/employees/view/{id}", // URL with parameters
+                   new { controller = "Employee", action = "View", id = UrlParameter.Optional } // Parameter defaults
+               );
 
 
             #region Event Routes
@@ -133,7 +138,6 @@ namespace Eventizer
                 "{controller}/{action}/{id}", // URL with parameters
                 new { controller = "Home", action = "Index", id = UrlParameter.Optional } // Parameter defaults
             );
-
         }
 
         protected void Application_Start()

@@ -129,6 +129,7 @@
     </Content>
     <Content Include="Static\css\app.less" />
     <Content Include="Static\css\app.min.css" />
+    <Content Include="Static\css\bootstrap.darkly.css" />
     <Content Include="Static\css\bootstrap.css" />
     <Content Include="Static\css\bootstrap.min.css" />
     <Content Include="Static\css\datepicker.css" />
@@ -147,7 +148,9 @@
     <Content Include="Static\js\jquery.validate.min.js" />
     <Content Include="Static\js\typeahead.bundle.min.js" />
     <Content Include="Static\js\_references.js" />
-    <Content Include="Web.config" />
+    <Content Include="Web.config">
+      <SubType>Designer</SubType>
+    </Content>
     <Content Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </Content>
@@ -184,6 +187,7 @@
     <Content Include="Views\Employee\Index.cshtml" />
     <Content Include="Views\Employee\Add.cshtml" />
     <Content Include="Views\Error\Index.cshtml" />
+    <Content Include="Views\Employee\View.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

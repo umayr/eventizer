@@ -20,6 +20,7 @@ namespace Eventizer.Controllers
                 Params.Add(new System.Data.SqlClient.SqlParameter("@email", email));
                 Params.Add(new System.Data.SqlClient.SqlParameter("@password", Essentials.CalculateSHA1(password)));
 
+
                 object check = (new Database()).ExecProcedureWithReturnValue("usp_login_employee", Params);
                 if ((int)check == 1)
                 {
@@ -219,6 +220,12 @@ namespace Eventizer.Controllers
                 return false;
             }
 
+        }
+
+        public ActionResult Logout()
+        {
+            Session.Clear();
+            return RedirectToAction("Index", "Home", new { Logout = true });
         }
     }
 }
